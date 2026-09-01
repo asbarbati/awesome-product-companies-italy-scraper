@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Custom
+src/awesome_product_companies_italy_scraper/scraper/output/output.*

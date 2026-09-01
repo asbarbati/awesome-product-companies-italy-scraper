@@ -1,0 +1,25 @@
+[project]
+name = "awesome-product-companies-italy-scraper"
+version = "0.1.0"
+description = "Scraper for https://github.com/asbarbati/awesome-product-companies-italy"
+readme = "README.md"
+authors = [
+    { name = "asbarbati", email = "122787746+asbarbati@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "scrapy>=2.18.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.5",
+    "scrapy-lint>=0.1.1",
+]
+
+[tool.scrapy-lint]
+ignore = ["SCP09"]
