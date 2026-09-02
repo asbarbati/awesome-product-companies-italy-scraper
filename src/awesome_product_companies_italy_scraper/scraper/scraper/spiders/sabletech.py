@@ -8,6 +8,7 @@ from scraper.items import JobItem
 class SAbletechSpider(scrapy.Spider):
     name = "abletech"
     allowed_domains = ("www.abletech.it")
+    career_page = "https://www.abletech.it/lavora-con-noi/"
     start_urls: ClassVar[list[str]] = ["https://www.abletech.it/lavora-con-noi/"]
 
     def parse(self, response):
@@ -16,4 +17,4 @@ class SAbletechSpider(scrapy.Spider):
             for card in block.css('div.card'):
                 job_title = card.css('h4::text').get()
                 if job_title:
-                    yield JobItem(title=job_title.strip(), career_page=self.start_urls[0])
+                    yield JobItem(title=job_title.strip(), career_page=self.career_page)

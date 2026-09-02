@@ -44,6 +44,7 @@ Below is an overview of the spiders and status:
 | :---:  | :---: | :---: |
 | ACTIVE  | 3Bee S.r.l. | 3bee |
 | ACTIVE  | Able Tech S.r.l. | abletech |
+| ACTIVE  | Alperia S.p.A. | alperia |
 
 
 ---
