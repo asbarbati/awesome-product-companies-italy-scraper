@@ -7,7 +7,7 @@ from scraper.items import JobItem
 
 class SAlperiaSpider(scrapy.Spider):
     name = "alperia"
-    allowed_domains = ("www.alperiagroup.eu", "alperiagroup.onboard.org")
+    allowed_domains: ClassVar[list[str]] = ["www.alperiagroup.eu", "alperiagroup.onboard.org"]
     career_page = "https://www.alperiagroup.eu/it/carriera"
     start_urls: ClassVar[list[str]] = ["https://alperiagroup.onboard.org/it/exports/v2/jobs.json?show_on_career_site=true&ignore_type=internship"]
 

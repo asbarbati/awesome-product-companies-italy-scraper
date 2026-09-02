@@ -7,7 +7,7 @@ from scraper.items import JobItem
 
 class SAbletechSpider(scrapy.Spider):
     name = "abletech"
-    allowed_domains = ("www.abletech.it")
+    allowed_domains: ClassVar[list[str]] = ["www.abletech.it"]
     career_page = "https://www.abletech.it/lavora-con-noi/"
     start_urls: ClassVar[list[str]] = ["https://www.abletech.it/lavora-con-noi/"]
 

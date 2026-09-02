@@ -7,7 +7,7 @@ from scraper.items import JobItem
 
 class S3beeSpider(scrapy.Spider):
     name = "3bee"
-    allowed_domains = ("3bee.factorial.it")
+    allowed_domains: ClassVar[list[str]] = ["3bee.factorial.it"]
     career_page = "https://3bee.factorial.it"
     start_urls: ClassVar[list[str]] = ["https://3bee.factorial.it"]
 

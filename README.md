@@ -46,7 +46,7 @@ Below is an overview of the spiders and status:
 | ACTIVE  | Able Tech S.r.l.                            | abletech                            |
 | ACTIVE  | Alperia S.p.A.                              | alperia                             |
 | ACTIVE  | Ariston Holding N.V.                        | ariston                             |
-
+| ACTIVE  | Aruba S.p.A.                                | aruba                               |
 
 
 ---
