@@ -1,7 +1,8 @@
-from typing import ClassVar
-
+import re
 import scrapy
+import unicodedata
 
+from typing import ClassVar
 from scraper.items import JobItem
 
 
@@ -17,4 +18,10 @@ class SBlunextSpider(scrapy.Spider):
         for job in job_items:
             raw_title = job.attrib.get("title")
             if raw_title:
-                yield JobItem(title=raw_title.strip(), career_page=self.career_page)
+                yield JobItem(title=self.clean_text(raw_title), career_page=self.career_page)
+
+    @staticmethod
+    def clean_text(text):
+        text = unicodedata.normalize("NFKC", text)
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
