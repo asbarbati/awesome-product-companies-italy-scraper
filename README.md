@@ -48,6 +48,7 @@ Below is an overview of the spiders and status:
 | ACTIVE  | Ariston Holding N.V. |   ariston   |
 | ACTIVE  |     Aruba S.p.A.     |    aruba    |
 | ACTIVE  |   Bludigit S.p.A.    |  bludigit   |
+| ACTIVE  |   Bluenext S.r.l.    |  blunext    |
 
 
 ---
