@@ -1,3 +1,5 @@
+import re
+import unicodedata
 from typing import ClassVar
 from urllib.parse import urlencode
 
@@ -5,53 +7,64 @@ import scrapy
 
 from scraper.items import JobItem
 
+
 class SBludigitSpider(scrapy.Spider):
     name = "bludigit"
     allowed_domains: ClassVar[list[str]] = ["carriere.italgas.it"]
     career_page = "https://carriere.italgas.it/search"
-    start_urls: ClassVar[list[str]] = ["https://carriere.italgas.it/search/?createNewAlert=false&q=&locationsearch=&optionsFacetsDD_customfield2=&optionsFacetsDD_customfield1=IT"]
+    start_url = (
+        "https://carriere.italgas.it/search/?createNewAlert=false&q=&locationsearch="
+        "&optionsFacetsDD_customfield2=&optionsFacetsDD_customfield1=IT"
+    )
+    results_path = "/tile-search-results/"
+    filters: ClassVar[dict[str, str]] = {
+        "q": "",
+        "sortColumn": "referencedate",
+        "sortDirection": "desc",
+        "optionsFacetsDD_customfield1": "IT",
+    }
 
-    def parse(self, response):
-        page_size = 5
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.start_urls = [self.start_url]
+        self.seen: set[str] = set()
 
-        yield from self.parse_tiles(response)
-
-        yield scrapy.Request(
-            self.results_url(page_size),
-            callback=self.parse_more,
-            meta={"startrow": page_size, "page_size" : page_size},
-        )
-
-    def parse_more(self, response):
-        if not response.css("li.job-tile"):
+    def parse(self, response, startrow=0):
+        tiles = response.css("li.job-tile")
+        if not tiles:
             return
 
-        yield from self.parse_tiles(response)
+        new_jobs = 0
+        for tile in tiles:
+            link = (tile.css("a.jobTitle-link") or tile.css("a"))[:1]
+            if not link:
+                continue
+            href = response.urljoin(link[0].attrib.get("href", ""))
+            title = self.clean_text(link[0].xpath("string(.)").get() or "")
+            if not title or href in self.seen:
+                continue
+            self.seen.add(href)
+            new_jobs += 1
+            yield JobItem(title=title, career_page=self.career_page)
 
-        page_size = response.meta["page_size"]
-        next_startrow = response.meta["startrow"] + page_size
+        self.logger.info("startrow=%s tiles=%s new=%s", startrow, len(tiles), new_jobs)
 
+        # Stop if the page added nothing new (end of results or ignored startrow).
+        if not new_jobs:
+            return
+
+        next_startrow = startrow + len(tiles)
         yield scrapy.Request(
-            self.results_url(next_startrow),
-            callback=self.parse_more,
-            meta={"startrow": next_startrow, "page_size" : page_size},
+            self.results_url(response, next_startrow),
+            cb_kwargs={"startrow": next_startrow},
         )
 
-    def parse_tiles(self, response):
-        for tile in response.css("li.job-tile"):
-            title = tile.css("a::text").get()
-
-            if title:
-                yield JobItem(title=title.strip(), career_page=self.career_page)
+    def results_url(self, response, startrow):
+        query = urlencode({**self.filters, "startrow": startrow})
+        return response.urljoin(f"{self.results_path}?{query}")
 
     @staticmethod
-    def results_url(startrow):
-        params = {
-            "q": "",
-            "sortColumn": "referencedate",
-            "sortDirection": "desc",
-            "optionsFacetsDD_customfield1": "IT",
-            "startrow": startrow,
-        }
-
-        return f"https://carriere.italgas.it/tile-search-results/?{urlencode(params)}"
+    def clean_text(text):
+        text = unicodedata.normalize("NFKC", text)
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
